@@ -1,0 +1,90 @@
+(function(){
+'use strict';
+const cfg=window.KURDUWADI_CONFIG||{};
+const sb=(cfg.SUPABASE_URL&&cfg.SUPABASE_ANON_KEY&&window.supabase?.createClient)
+  ? supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY):null;
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function setMsg(text){const e=$('loginMsg');if(e)e.textContent=text;}
+async function action(table,id,status,button){
+  if(!sb){alert('Supabase connection उपलब्ध नाही.');return;}
+  if(!id){alert('Record ID मिळाला नाही.');return;}
+  const actionText=status==='approved'?'मंजूर':'नकार';
+  if(!confirm(`ही नोंद ${actionText} करायची का?`))return;
+  if(button)button.disabled=true;
+  try{
+    let res;
+    if(table==='business_cards') res=await sb.rpc('set_business_card_status',{card_id:id,new_status:status});
+    else if(table==='gallery_items') res=await sb.rpc('set_gallery_item_status',{item_id:id,new_status:status});
+    else if(table==='personality_submissions'&&status==='approved') res=await sb.rpc('approve_personality_submission',{submission_id:id});
+    else {
+      const patch=(table==='profiles')?{status}:{status,published:status==='approved'};
+      res=await sb.from(table).update(patch).eq('id',id);
+    }
+    if(res?.error) throw res.error;
+    alert(`✅ ${actionText} यशस्वी.`);
+    await showDashboard();
+  }catch(err){
+    console.error(err);
+    const m=err?.message||String(err);
+    if(m.includes('ADMIN_REQUIRED')){
+      alert('❌ हा Login Admin म्हणून नोंदलेला नाही. Supabase मधील admin_profiles मध्ये या Login User ची ID + role=admin असणे आवश्यक आहे.');
+    }else if(m.includes('PENDING_')){
+      alert('❌ ही नोंद आता pending नाही. Admin Panel refresh करा.');
+    }else{
+      alert(`❌ ${actionText} अयशस्वी: ${m}`);
+    }
+  }finally{if(button)button.disabled=false;}
+}
+window.review=(table,id,status)=>action(table,id,status,null);
+
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ if(!sb){setMsg('Supabase configuration सापडली नाही.');return;}
+ const {error}=await sb.auth.signInWithPassword({email:$('email').value,password:$('password').value});
+ if(error){setMsg('लॉगिन अयशस्वी: '+error.message);return;}
+ await showDashboard();
+});
+$('logout').onclick=async()=>{if(sb)await sb.auth.signOut();location.reload()};
+
+async function checkAdmin(){
+ const {data,error}=await sb.rpc('admin_access_check');
+ if(error){console.warn('Admin check RPC:',error.message);return true;}
+ const row=Array.isArray(data)?data[0]:data;
+ if(row && row.is_admin===false){
+   const d=$('adminWarning');
+   if(d)d.hidden=false;
+   return false;
+ }
+ const d=$('adminWarning');if(d)d.hidden=true;return true;
+}
+
+async function showDashboard(){
+ $('loginBox').hidden=true;$('dashboard').hidden=false;
+ const p2=$('phase2Admin');if(p2)p2.hidden=false;
+ const ga=$('galleryAdmin');if(ga)ga.hidden=false;
+ if(!sb)return;
+ await checkAdmin();
+ await Promise.all([loadProfiles(),loadNews(),loadEvents(),loadIdeas(),loadNotices(),loadPersonalitySubmissions(),loadPhase2()]);
+}
+function buttons(table,id){return `<button type="button" class="btn approve-btn" data-table="${esc(table)}" data-id="${esc(id)}" data-status="approved">मंजूर</button> <button type="button" class="btn reject-btn" data-table="${esc(table)}" data-id="${esc(id)}" data-status="rejected">नकार</button>`}
+async function loadProfiles(){const {data,error}=await sb.from('profiles').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){$('profiles').innerHTML='त्रुटी: '+esc(error.message);return}$('profileCount').textContent=data.length;$('profiles').innerHTML=data.length?data.map(p=>`<div class="admin-item"><b>${esc(p.name)}</b><br>शिक्षण: ${esc(p.education||'-')} • ${esc(p.job||'-')}<br>शहर: ${esc(p.city||'-')}<br>${buttons('profiles',p.id)}</div>`).join(''):'प्रलंबित प्रोफाइल नाहीत.'}
+async function loadNews(){const {data,error}=await sb.from('news').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){$('news').innerHTML='त्रुटी: '+esc(error.message);return}$('newsCount').textContent=data.length;$('news').innerHTML=data.length?data.map(n=>`<div class="admin-item"><b>${esc(n.title)}</b><br>${esc(n.category||'')} • ${esc(n.author_name||'नागरिक')}<p>${esc((n.content||'').slice(0,240))}</p>${buttons('news',n.id)}</div>`).join(''):'प्रलंबित बातम्या नाहीत.'}
+async function loadEvents(){const {data,error}=await sb.from('events').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){$('events').innerHTML='त्रुटी: '+esc(error.message);return}$('eventCount').textContent=data.length;$('events').innerHTML=data.length?data.map(n=>`<div class="admin-item"><b>${esc(n.title)}</b><br>📅 ${esc(n.event_date||'-')} ${esc(n.event_time||'')} • 📍 ${esc(n.location||'-')}<p>${esc((n.description||'').slice(0,240))}</p>${buttons('events',n.id)}</div>`).join(''):'प्रलंबित कार्यक्रम नाहीत.'}
+async function loadIdeas(){const {data,error}=await sb.from('ideas').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){$('ideas').innerHTML='त्रुटी: '+esc(error.message);return}$('ideaCount').textContent=data.length;$('ideas').innerHTML=data.length?data.map(i=>`<div class="admin-item"><b>${esc(i.title)}</b><br>👤 ${esc(i.name||'नागरिक')} • 📍 ${esc(i.area||'-')}<p>${esc((i.description||'').slice(0,300))}</p>${i.image_url?`<img src="${esc(i.image_url)}" alt="कल्पना फोटो" style="max-width:220px;border-radius:10px">`:''}<br>${buttons('ideas',i.id)}</div>`).join(''):'प्रलंबित कल्पना नाहीत.'}
+async function loadPersonalitySubmissions(){const el=$('personalitySubmissions');if(!el)return;const {data,error}=await sb.from('personality_submissions').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){el.innerHTML='त्रुटी: '+esc(error.message);return}el.innerHTML=data.length?data.map(n=>`<div class="admin-item"><b>${esc(n.name)}</b><br>🏷️ ${esc(n.field||'-')} • ${esc(n.relation||'-')}<p>${esc((n.reason||'').slice(0,350))}</p>${n.image_url?`<img src="${esc(n.image_url)}" alt="व्यक्तिमत्त्व फोटो" style="max-width:220px;border-radius:10px">`:''}<br><button type="button" class="btn approve-btn" data-table="personality_submissions" data-id="${esc(n.id)}" data-status="approved">✅ मंजूर करा</button> <button type="button" class="btn reject-btn" data-table="personality_submissions" data-id="${esc(n.id)}" data-status="rejected">नकार</button></div>`).join(''):'प्रलंबित व्यक्तिमत्त्व सुचवण्या नाहीत.'}
+async function loadNotices(){const {data,error}=await sb.from('noticeboard').select('*').eq('status','pending').order('created_at',{ascending:false});if(error){$('notices').innerHTML='त्रुटी: '+esc(error.message);return}$('notices').innerHTML=data.length?data.map(n=>`<div class="admin-item"><b>${esc(n.title)}</b><br>📌 ${esc(n.type)} • 👤 ${esc(n.person_name||'नागरिक')}<p>${esc((n.description||'').slice(0,300))}</p>${n.image_url?`<img src="${esc(n.image_url)}" alt="सूचना फोटो" style="max-width:220px;border-radius:10px">`:''}<br>${buttons('noticeboard',n.id)}</div>`).join(''):'प्रलंबित सूचना नाहीत.'}
+async function loadPhase2(){
+ const b=$('businessCards');
+ if(b){const {data,error}=await sb.from('business_cards').select('*').eq('status','pending').order('created_at',{ascending:false});b.innerHTML=error?'त्रुटी: '+esc(error.message):(data.length?data.map(x=>`<div class="admin-item"><b>${esc(x.name)}</b><br>${esc(x.business_name||x.designation||'-')}<br>${x.photo_url?`<img src="${esc(x.photo_url)}" alt="Business card" style="max-width:180px;border-radius:10px;margin-top:8px">`:''}<br>${buttons('business_cards',x.id)}</div>`).join(''):'प्रलंबित कार्ड नाहीत.')}
+ const g=$('galleryItems');
+ if(g){const {data,error}=await sb.from('gallery_items').select('*').eq('status','pending').order('created_at',{ascending:false});g.innerHTML=error?'त्रुटी: '+esc(error.message):(data.length?data.map(x=>`<div class="admin-item"><b>${esc(x.title)}</b> • ${esc(x.media_type)}<br>${x.media_type==='video'?`<video src="${esc(x.media_url)}" controls style="max-width:320px;width:100%;border-radius:10px"></video>`:`<img src="${esc(x.media_url)}" alt="media" style="max-width:320px;width:100%;border-radius:10px">`}<br>${buttons('gallery_items',x.id)} <button type="button" class="btn delete-gallery-btn" data-id="${esc(x.id)}">🗑️ Delete</button></div>`).join(''):'प्रलंबित फोटो/व्हिडिओ नाहीत.')}
+}
+document.addEventListener('click',async e=>{
+ const btn=e.target.closest('button[data-table]');
+ if(btn){await action(btn.dataset.table,btn.dataset.id,btn.dataset.status,btn);return;}
+ const del=e.target.closest('.delete-gallery-btn');
+ if(del){if(!confirm('हा photo/video कायमचा delete करायचा का?'))return;del.disabled=true;const {error}=await sb.rpc('delete_gallery_item',{item_id:del.dataset.id});if(error)alert('❌ Delete अयशस्वी: '+error.message);else{alert('✅ Delete यशस्वी.');await showDashboard()}del.disabled=false;}
+});
+(async()=>{if(sb){const {data}=await sb.auth.getSession();if(data.session)await showDashboard()}})();
+})();
