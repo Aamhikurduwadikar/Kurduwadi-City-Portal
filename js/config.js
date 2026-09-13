@@ -17,4 +17,5 @@ window.KURDUWADI_CONFIG = {
   }
   var s=document.createElement('script');s.src='js/site-enhancements.js';s.defer=true;document.head.appendChild(s);
   var w=document.createElement('script');w.src='js/world-people.js';w.defer=true;document.head.appendChild(w);
+  var c=document.createElement('script');c.src='js/sidebar-cleanup.js';c.defer=true;document.head.appendChild(c);
 })();
