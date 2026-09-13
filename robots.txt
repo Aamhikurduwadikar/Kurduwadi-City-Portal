@@ -1,5 +1,6 @@
 # Kurduwadi City Portal robots.txt
 User-agent: *
 Allow: /
+Disallow: /admin/
 
-Sitemap: https://phase3-pied.vercel.app/sitemap.xml
+Sitemap: https://kurduwadi-city-portal.vercel.app/sitemap.xml
