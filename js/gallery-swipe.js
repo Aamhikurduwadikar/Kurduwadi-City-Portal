@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     const mediaHost=viewer.querySelector('#viewerMedia');
     const titleHost=viewer.querySelector('#viewerTitle');
     if(!inner||!mediaHost)return;
+    const css=document.createElement('style');css.textContent=`.gallery-swipe-nav{display:flex;align-items:center;justify-content:center;gap:18px;margin:0 0 10px;position:relative;z-index:2}.gallery-swipe-nav button{width:48px;height:48px;border:1px solid rgba(255,255,255,.3);border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:34px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:.2s}.gallery-swipe-nav button:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}.gallery-swipe-nav button:disabled{opacity:.35;cursor:default}.gallery-counter{min-width:72px;text-align:center;color:#fff;font-size:13px;font-weight:800;letter-spacing:.5px}.gallery-viewer-media{touch-action:pan-y;user-select:none;-webkit-user-drag:none}.gallery-viewer-inner{position:relative}@media(max-width:600px){.gallery-viewer{padding:12px!important}.gallery-viewer-inner{width:100%!important;max-height:96vh!important}.gallery-viewer-media{max-width:100%!important;max-height:68vh!important;border-radius:10px!important}.gallery-swipe-nav{gap:12px;margin-bottom:8px}.gallery-swipe-nav button{width:42px;height:42px;font-size:30px}.gallery-counter{font-size:12px}.gallery-viewer-title{font-size:15px!important;margin:9px 0 7px!important}.gallery-viewer-actions button{font-size:11px!important;padding:8px 10px!important}.gallery-viewer-close{right:10px!important;top:10px!important;width:40px!important;height:40px!important}}`;document.head.appendChild(css);
     const nav=document.createElement('div');nav.className='gallery-swipe-nav';
     nav.innerHTML='<button type="button" class="gallery-prev" aria-label="मागील फोटो">‹</button><span class="gallery-counter">1 / 1</span><button type="button" class="gallery-next" aria-label="पुढील फोटो">›</button>';
     inner.insertBefore(nav,inner.firstChild);
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       if(found>=0)index=found;
       return list;
     };
+    const escSwipe=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const render=()=>{
       const list=items(); if(!list.length)return;
       index=(index+list.length)%list.length;const x=list[index];
@@ -37,7 +39,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       nav.querySelector('.gallery-counter').textContent=`${index+1} / ${list.length}`;
       nav.querySelector('.gallery-prev').disabled=list.length<2;nav.querySelector('.gallery-next').disabled=list.length<2;
     };
-    const escSwipe=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const go=d=>{const list=syncIndex();if(list.length<2)return;index=(index+d+list.length)%list.length;render()};
     nav.querySelector('.gallery-prev').onclick=e=>{e.stopPropagation();go(-1)};
     nav.querySelector('.gallery-next').onclick=e=>{e.stopPropagation();go(1)};
