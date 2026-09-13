@@ -1,22 +1,68 @@
 const {SUPABASE_URL,SUPABASE_ANON_KEY}=window.KURDUWADI_CONFIG;
 let supabaseClient=null;
+let allDirectoryRows=[];
+let activeDirectoryFilter='all';
 if(window.supabase && SUPABASE_URL?.startsWith('http') && SUPABASE_ANON_KEY) supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 async function loadCitizens(){
   const grid=document.getElementById('citizenGrid'); if(!grid)return;
-  if(!supabaseClient){grid.innerHTML='<div class="empty">Database configuration तपासा.</div>';return;}
+  if(!supabaseClient){grid.innerHTML='<div class="citizen-empty"><strong>Database configuration तपासा.</strong><span>Supabase configuration उपलब्ध नाही.</span></div>';return;}
+  grid.innerHTML='<div class="citizen-empty"><strong>Directory load होत आहे…</strong><span>कृपया थोडा वेळ थांबा.</span></div>';
   const q=(document.getElementById('searchInput')?.value||'').trim();
   const city=(document.getElementById('cityFilter')?.value||'').trim();
   let query=supabaseClient.from('kurduwadi_directory').select('business_name,category,contact_number,address,timings,google_maps_link,status,is_approved').eq('status','approved').eq('is_approved',true).order('business_name',{ascending:true}).limit(100);
   if(city) query=query.ilike('address',`%${city}%`);
   if(q) query=query.or(`business_name.ilike.%${q}%,category.ilike.%${q}%,contact_number.ilike.%${q}%,address.ilike.%${q}%`);
   const {data,error}=await query;
-  if(error){console.error(error);grid.innerHTML='<div class="empty">Directory माहिती load झाली नाही. कृपया पुन्हा प्रयत्न करा.</div>';return;}
-  if(!data?.length){grid.innerHTML='<div class="empty">सध्या मंजूर Directory माहिती उपलब्ध नाही.</div>';return;}
-  grid.innerHTML=data.map(p=>`<article class="citizen-card"><h3>${escapeHtml(p.business_name)}</h3>${p.category?`<div class="meta">${escapeHtml(p.category)}</div>`:''}${p.address?`<p>📍 ${escapeHtml(p.address)}</p>`:''}${p.contact_number?`<p>📞 <a href="tel:${escapeAttr(p.contact_number)}">${escapeHtml(p.contact_number)}</a></p>`:''}${p.timings?`<p>🕒 ${escapeHtml(p.timings)}</p>`:''}${p.google_maps_link?`<a class="text-btn" href="${safeUrl(p.google_maps_link)}" target="_blank" rel="noopener">📍 नकाशावर पहा →</a>`:''}</article>`).join('');
+  if(error){console.error(error);grid.innerHTML='<div class="citizen-empty"><strong>Directory माहिती load झाली नाही.</strong><span>कृपया पुन्हा प्रयत्न करा.</span></div>';return;}
+  allDirectoryRows=data||[];
+  const count=document.getElementById('directoryCount'); if(count) count.textContent=allDirectoryRows.length;
+  renderDirectory();
+}
+
+function renderDirectory(){
+  const grid=document.getElementById('citizenGrid'); if(!grid)return;
+  let rows=allDirectoryRows;
+  if(activeDirectoryFilter!=='all') rows=rows.filter(p=>matchesCategory(p.category,activeDirectoryFilter));
+  if(!rows.length){grid.innerHTML='<div class="citizen-empty"><strong>सध्या नोंदी उपलब्ध नाहीत.</strong><span>शोध किंवा category filter बदलून पुन्हा पहा.</span></div>';return;}
+  grid.innerHTML=rows.map(p=>{
+    const name=escapeHtml(p.business_name||'कुर्डुवाडी नागरिक');
+    const category=escapeHtml(p.category||'स्थानिक माहिती');
+    const initial=escapeHtml((p.business_name||'कु').trim().charAt(0).toUpperCase());
+    const map=p.google_maps_link?safeUrl(p.google_maps_link):'';
+    return `<article class="citizen-card">
+      <div class="citizen-top"><div class="citizen-avatar">${initial}</div><div class="citizen-heading"><h3>${name}</h3><span class="citizen-category">● ${category}</span></div></div>
+      <span class="citizen-status">✓ Verified</span>
+      <div class="citizen-info">
+        ${p.address?`<p>📍 ${escapeHtml(p.address)}</p>`:''}
+        ${p.contact_number?`<p>📞 <a href="tel:${escapeAttr(p.contact_number)}">${escapeHtml(p.contact_number)}</a></p>`:''}
+        ${p.timings?`<p>🕒 ${escapeHtml(p.timings)}</p>`:''}
+      </div>
+      <div class="citizen-actions">
+        ${p.contact_number?`<a class="citizen-action primary" href="tel:${escapeAttr(p.contact_number)}">📞 संपर्क</a>`:''}
+        ${map?`<a class="citizen-action" href="${map}" target="_blank" rel="noopener">📍 नकाशा</a>`:''}
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function matchesCategory(category,filter){
+  const c=String(category||'').toLowerCase();
+  const groups={business:['business','व्यवसाय','shop','दुकान','किराणा'],service:['service','सेवा','consult','consulting'],education:['education','शिक्षण','school','college','class'],health:['health','आरोग्य','hospital','doctor','clinic','दवाखाना'],other:[]};
+  return groups[filter]?.some(k=>c.includes(k))||filter==='other' && !Object.values(groups).flat().some(k=>c.includes(k));
 }
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function escapeAttr(s){return String(s??'').replace(/[^0-9+()\- ]/g,'');}
 function safeUrl(s){const u=String(s??'').trim();return /^https?:\/\//i.test(u)?escapeHtml(u):'#';}
+
 window.loadCitizens=loadCitizens;
-document.addEventListener('DOMContentLoaded',loadCitizens);
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.directory-filter').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.directory-filter').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeDirectoryFilter=btn.dataset.filter||'all';
+    renderDirectory();
+  }));
+  document.getElementById('searchInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loadCitizens();}});
+  loadCitizens();
+});
