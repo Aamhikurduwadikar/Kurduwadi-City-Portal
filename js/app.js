@@ -1,30 +1,7 @@
 const {SUPABASE_URL,SUPABASE_ANON_KEY}=window.KURDUWADI_CONFIG;
-
-function toggleNav(){
-  const nav=document.getElementById('nav');
-  if(nav) nav.classList.toggle('open');
-}
-
-async function loadCitizens(){
-  const grid=document.getElementById('citizenGrid');
-  if(!grid) return;
-  if(SUPABASE_URL.includes('YOUR-PROJECT')){
-    grid.innerHTML='<div class="empty">नागरिक Directory सध्या Demo Mode मध्ये आहे. Supabase जोडल्यावर मंजूर नागरिक येथे दिसतील.</div>';
-    const count=document.getElementById('citizenCount'); if(count) count.textContent='0+';
-    return;
-  }
-  try{
-    const q=document.getElementById('searchInput')?.value?.trim()||'';
-    const city=document.getElementById('cityFilter')?.value||'';
-    let url=SUPABASE_URL+'/rest/v1/profiles?select=id,name,education,job,city,state,country,skills,blood_group,phone&status=eq.approved&is_public=eq.true&order=name.asc';
-    if(city) url+='&city=eq.'+encodeURIComponent(city);
-    const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY}});
-    if(!res.ok) throw new Error('API error');
-    let data=await res.json();
-    if(q){const s=q.toLowerCase();data=data.filter(x=>[x.name,x.education,x.job,x.city,x.state,x.country,x.skills].join(' ').toLowerCase().includes(s));}
-    if(!data.length){grid.innerHTML='<div class="empty">शोधानुसार नागरिक सापडले नाहीत.</div>';return;}
-    grid.innerHTML=data.map(x=>`<article class="citizen-card"><h3>${escapeHtml(x.name)}</h3><div class="meta">${escapeHtml(x.education||'')} • ${escapeHtml(x.job||'')}</div><div class="meta">📍 ${escapeHtml(x.city||'')}, ${escapeHtml(x.state||'')}</div><div>${(x.skills||'').split(',').slice(0,4).map(s=>`<span class="badge">${escapeHtml(s.trim())}</span>`).join('')}</div></article>`).join('');
-  }catch(e){grid.innerHTML='<div class="empty">Database कनेक्शन उपलब्ध नाही. कृपया Supabase सेटिंग तपासा.</div>';}
-}
+function toggleNav(){const nav=document.getElementById('nav');if(nav)nav.classList.toggle('open');}
+async function loadCitizens(){const grid=document.getElementById('citizenGrid');if(!grid)return;if(SUPABASE_URL.includes('YOUR-PROJECT')){grid.innerHTML='<div class="empty">नागरिक Directory सध्या Demo Mode मध्ये आहे. Supabase जोडल्यावर मंजूर नागरिक येथे दिसतील.</div>';return;}try{const q=document.getElementById('searchInput')?.value?.trim()||'';const city=document.getElementById('cityFilter')?.value||'';let url=SUPABASE_URL+'/rest/v1/profiles?select=id,name,education,job,city,state,country,skills,blood_group,phone&status=eq.approved&is_public=eq.true&order=name.asc';if(city)url+='&city=eq.'+encodeURIComponent(city);const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY}});if(!res.ok)throw new Error('API error');let data=await res.json();if(q){const s=q.toLowerCase();data=data.filter(x=>[x.name,x.education,x.job,x.city,x.state,x.country,x.skills].join(' ').toLowerCase().includes(s));}if(!data.length){grid.innerHTML='<div class="empty">शोधानुसार नागरिक सापडले नाहीत.</div>';return;}grid.innerHTML=data.map(x=>`<article class="citizen-card"><h3>${escapeHtml(x.name)}</h3><div class="meta">${escapeHtml(x.education||'')} • ${escapeHtml(x.job||'')}</div><div class="meta">📍 ${escapeHtml(x.city||'')}, ${escapeHtml(x.state||'')}</div><div>${(x.skills||'').split(',').slice(0,4).map(s=>`<span class="badge">${escapeHtml(s.trim())}</span>`).join('')}</div></article>`).join('');}catch(e){grid.innerHTML='<div class="empty">Database कनेक्शन उपलब्ध नाही. कृपया Supabase सेटिंग तपासा.</div>';}}
 function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-document.addEventListener('DOMContentLoaded',()=>{loadCitizens();});
+async function loadHomeData(){if(!SUPABASE_URL||!SUPABASE_ANON_KEY||!document.body.classList.contains('premium-home'))return;const h={apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY};const get=async p=>{const r=await fetch(SUPABASE_URL+'/rest/v1/'+p,{headers:h});if(!r.ok)throw Error(r.status);return r.json();};try{const [news,events,people]=await Promise.all([get('news?select=id,title,content,created_at,category&status=eq.approved&published=eq.true&order=created_at.desc&limit=3'),get('events?select=id,title,event_date,event_time,location&status=eq.approved&published=eq.true&order=event_date.asc&limit=3'),get('personalities?select=id,name,photo_url,field,position&status=eq.approved&published=eq.true&order=name.asc&limit=4')]);const grid=document.querySelector('.premium-home .news-grid');if(grid){const cards=[...news.map(n=>`<a class="news-card premium-data-card" href="news.html"><span class="news-tag">${escapeHtml(n.category||'बातमी')}</span><b>${escapeHtml(n.title)}</b><small>${escapeHtml((n.content||'').replace(/<[^>]*>/g,'').slice(0,110))}</small><time>${homeDate(n.created_at)} · अधिक पहा →</time></a>`),...events.map(e=>`<a class="news-card premium-data-card" href="events.html"><span class="news-tag purple">कार्यक्रम</span><b>${escapeHtml(e.title)}</b><small>📍 ${escapeHtml(e.location||'कुर्डुवाडी')} ${e.event_time?'· '+escapeHtml(e.event_time):''}</small><time>${homeDate(e.event_date)} · अधिक पहा →</time></a>`)];grid.innerHTML=cards.length?cards.slice(0,6).join(''):'<div class="citizen-empty"><strong>सध्या मंजूर बातम्या किंवा कार्यक्रम उपलब्ध नाहीत.</strong></div>';}const box=document.querySelector('.premium-home .sidebar .side-box');if(box){box.querySelectorAll('.side-news').forEach(x=>x.remove());people.forEach(p=>{const a=document.createElement('a');a.className='side-news';a.href='personalities.html';a.innerHTML=`<div class="thumb blue-bg">${p.photo_url?`<img src="${escapeHtml(p.photo_url)}" alt="${escapeHtml(p.name)}" loading="lazy">`:'🏅'}</div><div><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.field||p.position||'अभिमानास्पद व्यक्तिमत्त्व')}</small></div>`;box.appendChild(a);});}}catch(e){console.error('Home Supabase data',e);}}
+function homeDate(v){if(!v)return '';try{return new Date(v).toLocaleDateString('mr-IN',{day:'numeric',month:'short',year:'numeric'});}catch{return '';}}
+document.addEventListener('DOMContentLoaded',()=>{loadCitizens();loadHomeData();});
