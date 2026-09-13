@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>नागरिक Directory | Kurduwadi</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<header class="header"><div class="brand"><div class="brand-mark">K</div><div><strong>कुर्डुवाडी</strong><small>CITIZEN DIRECTORY</small></div></div><a class="outline-btn" href="index.html">← मुख्यपृष्ठ</a></header>
+<main class="section"><span class="section-label">COMMUNITY DIRECTORY</span><h1>कुर्डुवाडी नागरिक</h1><p class="muted">फक्त public करण्यास परवानगी दिलेल्या आणि approved profiles येथे दिसतील.</p>
+<div class="search-row directory-search"><input id="searchInput" type="search" placeholder="नाव, शिक्षण, job, skill किंवा शहर..."><select id="cityFilter"><option value="">सर्व ठिकाणे</option><option>Pune</option><option>Solapur</option><option>Kolhapur</option><option>Mumbai</option><option>Other Maharashtra</option><option>Other India</option><option>Abroad</option></select><button onclick="loadCitizens()">शोधा</button></div>
+<div id="citizenGrid" class="citizen-grid"><div class="empty">Database जोडल्यावर Directory येथे दिसेल.</div></div></main>
+<script src="js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/directory.js"></script>
+<script src="js/site.js"></script><script src="js/analytics.js"></script>
+</body></html>

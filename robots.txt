@@ -1,0 +1,5 @@
+# Kurduwadi City Portal robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://phase3-pied.vercel.app/sitemap.xml
