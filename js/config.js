@@ -1,8 +1,8 @@
 // Supabase public frontend configuration.
-// Replace only these two values. NEVER put a service_role/secret key here.
+// Only publishable/anon keys belong in browser code. NEVER put a service_role/secret key here.
 window.KURDUWADI_CONFIG = {
   SUPABASE_URL: 'https://rjfgfdgrqficffbyqvlf.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqZmdmZGdycXJmaWNmZnlxdmxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwMTU3MzEsImV4cCI6MjEwNDU5MTczMX0.Kf5Q4r-hdrk0W-1N6XHeig0iUqYCe3zXKJbfhwA0bWk',
+  SUPABASE_ANON_KEY: 'sb_publishable_G3lGu7INXtIGmjum8nj7_A_opGtO3B2',
   STORAGE_BUCKET: 'community-images',
   GA_MEASUREMENT_ID: 'G-XXXXXXXXXX',
   SITE_NAME: 'Kurduwadi City Portal',
