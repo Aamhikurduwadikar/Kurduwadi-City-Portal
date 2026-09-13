@@ -19,4 +19,5 @@ window.KURDUWADI_CONFIG = {
   var w=document.createElement('script');w.src='js/world-people.js';w.defer=true;document.head.appendChild(w);
   var c=document.createElement('script');c.src='js/sidebar-cleanup.js';c.defer=true;document.head.appendChild(c);
   var h2=document.createElement('script');h2.src='js/header-enhancement.js';h2.defer=true;document.head.appendChild(h2);
+  var r=document.createElement('script');r.src='js/representatives-instagram.js';r.defer=true;document.head.appendChild(r);
 })();
