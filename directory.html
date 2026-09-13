@@ -1,11 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="mr">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>नागरिक Directory | Kurduwadi</title><link rel="stylesheet" href="css/style.css"></head>
-<body>
-<header class="header"><div class="brand"><div class="brand-mark">K</div><div><strong>कुर्डुवाडी</strong><small>CITIZEN DIRECTORY</small></div></div><a class="outline-btn" href="index.html">← मुख्यपृष्ठ</a></header>
-<main class="section"><span class="section-label">COMMUNITY DIRECTORY</span><h1>कुर्डुवाडी नागरिक</h1><p class="muted">फक्त public करण्यास परवानगी दिलेल्या आणि approved profiles येथे दिसतील.</p>
-<div style="margin:16px 0"><a class="primary-btn" href="directory-submit.html">➕ Directory मध्ये माहिती जोडा</a></div>
-<div class="search-row directory-search"><input id="searchInput" type="search" placeholder="नाव, शिक्षण, job, skill किंवा शहर..."><select id="cityFilter"><option value="">सर्व ठिकाणे</option><option>Pune</option><option>Solapur</option><option>Kolhapur</option><option>Mumbai</option><option>Other Maharashtra</option><option>Other India</option><option>Abroad</option></select><button onclick="loadCitizens()">शोधा</button></div>
-<div id="citizenGrid" class="citizen-grid"><div class="empty">Database जोडल्यावर Directory येथे दिसेल.</div></div></main>
-<script src="js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/directory.js"></script><script src="js/site.js"></script><script src="js/analytics.js"></script>
-</body></html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="कुर्डुवाडी नागरिक आणि स्थानिक व्यवसाय Directory — संपर्क, सेवा आणि महत्त्वाची माहिती एका ठिकाणी.">
+  <title>कुर्डुवाडी Directory | Kurduwadi City Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/directory-premium.css">
+</head>
+<body class="directory-page">
+  <header class="header">
+    <a class="brand" href="index.html" aria-label="कुर्डुवाडी मुख्यपृष्ठ">
+      <div class="brand-mark">K</div>
+      <div><strong>कुर्डुवाडी</strong><small>KURDUWADI CITY PORTAL</small></div>
+    </a>
+    <nav aria-label="मुख्य मेनू">
+      <a href="index.html">मुख्यपृष्ठ</a>
+      <a href="news.html">बातम्या</a>
+      <a href="events.html">कार्यक्रम</a>
+      <a href="directory.html" class="active">डिरेक्टरी</a>
+      <a href="noticeboard.html">सूचनाफलक</a>
+      <a href="gallery.html">गॅलरी</a>
+    </nav>
+    <a class="outline-btn" href="directory-submit.html">+ माहिती जोडा</a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="मेनू">☰</button>
+  </header>
+
+  <main class="directory-shell">
+    <div class="directory-crumbs"><a href="index.html">मुख्यपृष्ठ</a><span>›</span><span>डिरेक्टरी</span></div>
+
+    <section class="directory-hero">
+      <div class="directory-hero-copy">
+        <span class="directory-kicker">Kurduwadi Community Directory</span>
+        <h1>कुर्डुवाडी डिरेक्टरी</h1>
+        <p>आपल्या शहरातील नागरिक, व्यवसाय, सेवा आणि उपयुक्त संपर्कांची माहिती एका सुंदर आणि सोप्या ठिकाणी शोधा.</p>
+      </div>
+      <div class="directory-hero-actions">
+        <a class="directory-primary" href="directory-submit.html">＋ माहिती जोडा</a>
+        <a class="directory-secondary" href="index.html">मुख्यपृष्ठ</a>
+      </div>
+    </section>
+
+    <section class="directory-stats" aria-label="डिरेक्टरी माहिती">
+      <div class="directory-stat"><strong id="directoryCount">—</strong><span>मंजूर नोंदी</span></div>
+      <div class="directory-stat"><strong>100%</strong><span>Admin पडताळणी</span></div>
+      <div class="directory-stat"><strong>24×7</strong><span>ऑनलाइन उपलब्ध</span></div>
+    </section>
+
+    <section class="directory-toolbar" aria-label="Directory शोध">
+      <div class="directory-searchbar">
+        <input id="searchInput" type="search" placeholder="नाव, व्यवसाय, सेवा, पत्ता किंवा मोबाईल शोधा…" aria-label="Directory शोध">
+        <select id="cityFilter" aria-label="ठिकाण निवडा">
+          <option value="">सर्व ठिकाणे</option>
+          <option>Pune</option><option>Solapur</option><option>Kolhapur</option><option>Mumbai</option><option>Other Maharashtra</option><option>Other India</option><option>Abroad</option>
+        </select>
+        <button type="button" onclick="loadCitizens()">🔎 शोधा</button>
+      </div>
+      <div class="directory-filters" aria-label="शोध पर्याय">
+        <button class="directory-filter active" type="button" data-filter="all">सर्व</button>
+        <button class="directory-filter" type="button" data-filter="business">व्यवसाय</button>
+        <button class="directory-filter" type="button" data-filter="service">सेवा</button>
+        <button class="directory-filter" type="button" data-filter="education">शिक्षण</button>
+        <button class="directory-filter" type="button" data-filter="health">आरोग्य</button>
+        <button class="directory-filter" type="button" data-filter="other">इतर</button>
+      </div>
+    </section>
+
+    <div class="directory-resultbar">
+      <div><h2>मंजूर Directory नोंदी</h2><p>Admin ने पडताळलेल्या माहितीचे public cards येथे दिसतील.</p></div>
+      <span class="verified-note">✓ पडताळलेली माहिती</span>
+    </div>
+
+    <section id="citizenGrid" class="citizen-grid" aria-live="polite">
+      <div class="citizen-empty"><strong>Directory माहिती load होत आहे…</strong><span>कृपया थोडा वेळ थांबा.</span></div>
+    </section>
+
+    <section class="directory-join">
+      <div><h3>तुमची माहितीही Directory मध्ये जोडा</h3><p>माहिती Submit करा. Admin पडताळणीनंतर ती public Directory मध्ये दिसेल.</p></div>
+      <a href="directory-submit.html">माहिती Submit करा →</a>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/directory.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>
