@@ -12,6 +12,9 @@ window.KURDUWADI_CONFIG = {
   if(!document.getElementById('kpResponsiveFinal')){
     var l=document.createElement('link');l.id='kpResponsiveFinal';l.rel='stylesheet';l.href='css/responsive-final.css';document.head.appendChild(l);
   }
+  if(!document.getElementById('kpWorldPeopleLight')){
+    var wl=document.createElement('link');wl.id='kpWorldPeopleLight';wl.rel='stylesheet';wl.href='css/world-people-light.css';document.head.appendChild(wl);
+  }
   if(!document.getElementById('kpHeroRestore')){
     var h=document.createElement('link');h.id='kpHeroRestore';h.rel='stylesheet';h.href='css/hero-restore.css';document.head.appendChild(h);
   }
