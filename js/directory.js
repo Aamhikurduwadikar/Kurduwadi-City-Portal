@@ -10,9 +10,9 @@ async function loadCitizens(){
   grid.innerHTML='<div class="citizen-empty"><strong>Directory load होत आहे…</strong><span>कृपया थोडा वेळ थांबा.</span></div>';
   const q=(document.getElementById('searchInput')?.value||'').trim();
   const city=(document.getElementById('cityFilter')?.value||'').trim();
-  let query=supabaseClient.from('kurduwadi_directory').select('business_name,category,contact_number,address,timings,google_maps_link,status,is_approved').eq('status','approved').eq('is_approved',true).order('business_name',{ascending:true}).limit(100);
+  let query=supabaseClient.from('kurduwadi_directory').select('business_name,category,contact_number,email,address,timings,google_maps_link,status,is_approved').eq('status','approved').eq('is_approved',true).order('business_name',{ascending:true}).limit(100);
   if(city) query=query.ilike('address',`%${city}%`);
-  if(q) query=query.or(`business_name.ilike.%${q}%,category.ilike.%${q}%,contact_number.ilike.%${q}%,address.ilike.%${q}%`);
+  if(q) query=query.or(`business_name.ilike.%${q}%,category.ilike.%${q}%,contact_number.ilike.%${q}%,email.ilike.%${q}%,address.ilike.%${q}%`);
   const {data,error}=await query;
   if(error){console.error(error);grid.innerHTML='<div class="citizen-empty"><strong>Directory माहिती load झाली नाही.</strong><span>कृपया पुन्हा प्रयत्न करा.</span></div>';return;}
   allDirectoryRows=data||[];
@@ -30,16 +30,22 @@ function renderDirectory(){
     const category=escapeHtml(p.category||'स्थानिक माहिती');
     const initial=escapeHtml((p.business_name||'कु').trim().charAt(0).toUpperCase());
     const map=p.google_maps_link?safeUrl(p.google_maps_link):'';
+    const phone=p.contact_number?normalizePhone(p.contact_number):'';
+    const wa=phone?`https://wa.me/${phone}?text=${encodeURIComponent('नमस्कार, '+(p.business_name||'आपल्या Directory माहितीबद्दल')+' संदर्भात संपर्क करायचा आहे.')}`:'';
+    const email=p.email?safeEmail(p.email):'';
     return `<article class="citizen-card">
       <div class="citizen-top"><div class="citizen-avatar">${initial}</div><div class="citizen-heading"><h3>${name}</h3><span class="citizen-category">● ${category}</span></div></div>
       <span class="citizen-status">✓ Verified</span>
       <div class="citizen-info">
         ${p.address?`<p>📍 ${escapeHtml(p.address)}</p>`:''}
-        ${p.contact_number?`<p>📞 <a href="tel:${escapeAttr(p.contact_number)}">${escapeHtml(p.contact_number)}</a></p>`:''}
+        ${p.contact_number?`<p>📱 ${escapeHtml(p.contact_number)}</p>`:''}
+        ${p.email?`<p>✉️ <a href="mailto:${email}">${escapeHtml(p.email)}</a></p>`:''}
         ${p.timings?`<p>🕒 ${escapeHtml(p.timings)}</p>`:''}
       </div>
       <div class="citizen-actions">
-        ${p.contact_number?`<a class="citizen-action primary" href="tel:${escapeAttr(p.contact_number)}">📞 संपर्क</a>`:''}
+        ${wa?`<a class="citizen-action primary" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}
+        ${p.contact_number?`<a class="citizen-action" href="tel:${escapeAttr(p.contact_number)}">📞 कॉल</a>`:''}
+        ${email?`<a class="citizen-action" href="mailto:${email}">✉️ Email</a>`:''}
         ${map?`<a class="citizen-action" href="${map}" target="_blank" rel="noopener">📍 नकाशा</a>`:''}
       </div>
     </article>`;
@@ -51,6 +57,12 @@ function matchesCategory(category,filter){
   const groups={business:['business','व्यवसाय','shop','दुकान','किराणा'],service:['service','सेवा','consult','consulting'],education:['education','शिक्षण','school','college','class'],health:['health','आरोग्य','hospital','doctor','clinic','दवाखाना'],other:[]};
   return groups[filter]?.some(k=>c.includes(k))||filter==='other' && !Object.values(groups).flat().some(k=>c.includes(k));
 }
+function normalizePhone(s){
+  let n=String(s||'').replace(/\D/g,'');
+  if(n.length===10)n='91'+n;
+  return n;
+}
+function safeEmail(s){return String(s||'').trim().replace(/[^a-zA-Z0-9.!#$%&'*+/=?^_`{|}~@-]/g,'');}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function escapeAttr(s){return String(s??'').replace(/[^0-9+()\- ]/g,'');}
 function safeUrl(s){const u=String(s??'').trim();return /^https?:\/\//i.test(u)?escapeHtml(u):'#';}
