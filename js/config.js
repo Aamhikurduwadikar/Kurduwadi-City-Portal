@@ -12,5 +12,8 @@ window.KURDUWADI_CONFIG = {
   if(!document.getElementById('kpResponsiveFinal')){
     var l=document.createElement('link');l.id='kpResponsiveFinal';l.rel='stylesheet';l.href='css/responsive-final.css';document.head.appendChild(l);
   }
+  if(!document.getElementById('kpHeroRestore')){
+    var h=document.createElement('link');h.id='kpHeroRestore';h.rel='stylesheet';h.href='css/hero-restore.css';document.head.appendChild(h);
+  }
   var s=document.createElement('script');s.src='js/site-enhancements.js';s.defer=true;document.head.appendChild(s);
 })();
