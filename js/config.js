@@ -9,7 +9,8 @@ window.KURDUWADI_CONFIG = {
   SITE_URL: 'https://kurduwadi-city-portal.vercel.app/'
 };
 (function(){
-  if(document.getElementById('kpResponsiveFinal'))return;
-  var l=document.createElement('link');l.id='kpResponsiveFinal';l.rel='stylesheet';l.href='css/responsive-final.css';
-  document.head.appendChild(l);
+  if(!document.getElementById('kpResponsiveFinal')){
+    var l=document.createElement('link');l.id='kpResponsiveFinal';l.rel='stylesheet';l.href='css/responsive-final.css';document.head.appendChild(l);
+  }
+  var s=document.createElement('script');s.src='js/site-enhancements.js';s.defer=true;document.head.appendChild(s);
 })();
