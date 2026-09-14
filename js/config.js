@@ -12,6 +12,7 @@ window.KURDUWADI_CONFIG = {
   if(!document.getElementById('kpResponsiveFinal')){var l=document.createElement('link');l.id='kpResponsiveFinal';l.rel='stylesheet';l.href='css/responsive-final.css';document.head.appendChild(l)}
   if(!document.getElementById('kpWorldPeopleLight')){var wl=document.createElement('link');wl.id='kpWorldPeopleLight';wl.rel='stylesheet';wl.href='css/world-people-light.css';document.head.appendChild(wl)}
   if(!document.getElementById('kpHeroRestore')){var h=document.createElement('link');h.id='kpHeroRestore';h.rel='stylesheet';h.href='css/hero-restore.css';document.head.appendChild(h)}
+  if(!document.getElementById('kpPrideCompact')){var pc=document.createElement('link');pc.id='kpPrideCompact';pc.rel='stylesheet';pc.href='css/personalities-compact.css';document.head.appendChild(pc)}
   var s=document.createElement('script');s.src='js/site-enhancements.js';s.defer=true;document.head.appendChild(s);
   var w=document.createElement('script');w.src='js/world-people.js';w.defer=true;document.head.appendChild(w);
   var c=document.createElement('script');c.src='js/sidebar-cleanup.js';c.defer=true;document.head.appendChild(c);
@@ -19,4 +20,5 @@ window.KURDUWADI_CONFIG = {
   var r=document.createElement('script');r.src='js/representatives-instagram.js';r.defer=true;document.head.appendChild(r);
   var f=document.createElement('script');f.src='js/final-home-trust-fix.js';f.defer=true;document.head.appendChild(f);
   var a=document.createElement('script');a.src='js/work-fields-admin.js';a.defer=true;document.head.appendChild(a);
+  var p=document.createElement('script');p.src='js/home-pride-compact.js';p.defer=true;document.head.appendChild(p);
 })();
