@@ -5,6 +5,7 @@ window.KURDUWADI_CONFIG={SUPABASE_URL:'https://rjfgfdgrqficffbyqvlf.supabase.co'
  var path=location.pathname.toLowerCase(),home=/\/(index\.html)?$/.test(path),profile=path.endsWith('/profile.html'),reps=path.endsWith('/representatives.html'),admin=path.includes('/admin/');
  function css(id,href){if(!document.getElementById(id)){var l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=href;document.head.appendChild(l)}}
  function js(src){var s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)}
+ css('kpModernFonts','css/font-modern.css');
  css('kpResponsiveFinal','css/responsive-final.css');
  if(!admin)css('kpMobileBottomNavCss','css/mobile-bottom-nav.css');
  if(home){css('kpWorldPeopleLight','css/world-people-light.css');css('kpHeroRestore','css/hero-restore.css');css('kpPrideCompact','css/personalities-compact.css');js('js/site-enhancements.js');js('js/world-people.js');js('js/sidebar-cleanup.js');js('js/header-enhancement.js');js('js/final-home-trust-fix.js');js('js/home-pride-compact.js')}
