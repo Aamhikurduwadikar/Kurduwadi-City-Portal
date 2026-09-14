@@ -30,11 +30,11 @@
     const root=document.getElementById('reps');if(!root)return;
     const cards=[...root.querySelectorAll('.rep-card')];if(cards.length<2)return;
     const rank=s=>{const x=String(s||'').toLowerCase();
+      if(x.includes('पंचायत समिती')||x.includes('पंचायत समिति')||x.includes('सभापती, पंचायत')||x.includes('उपसभापती, पंचायत'))return 10;
       if(x.includes('नगराध्यक्ष')||x.includes('नगराध्यक्षा'))return 1;
       if(x.includes('उपनगराध्यक्ष')||x.includes('उपनगराध्यक्षा'))return 2;
       if(x.includes('सभापती')&&!x.includes('उपसभापती'))return 3;
       if(x.includes('उपसभापती'))return 4;
-      if(x.includes('पंचायत समिती')||x.includes('पंचायत समिति')||x.includes('सभापती, पंचायत')||x.includes('उपसभापती, पंचायत'))return 10;
       if(x.includes('आमदार')||x.includes('विधानसभा'))return 20;
       if(x.includes('खासदार')||x.includes('सांसद')||x.includes('लोकसभा'))return 30;
       return 99;
