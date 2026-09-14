@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="mr">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>माझी माहिती | Kurduwadi</title><link rel="stylesheet" href="css/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>माझी माहिती | Kurduwadi</title><link rel="stylesheet" href="css/style.css"><style>
+.work-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.work-option{display:flex!important;align-items:flex-start;gap:10px;padding:12px;border:1px solid #dce6ee;border-radius:11px;background:#fbfdff;font-weight:600!important;cursor:pointer;margin:0!important}.work-option input{width:auto!important;margin:4px 0 0!important}.work-option span{line-height:1.45}.work-note{font-size:11px;color:#71879a;margin:-8px 0 16px}@media(max-width:560px){.work-fields{grid-template-columns:1fr}}
+</style></head>
 <body class="form-page">
 <header class="header"><div class="brand"><div class="brand-mark">K</div><div><strong>कुर्डुवाडी</strong><small>KURDUWADI CITY PORTAL</small></div></div><a class="outline-btn" href="index.html">← मुख्यपृष्ठ</a></header>
 <main class="form-wrap">
@@ -11,15 +13,29 @@
   <div class="two"><label>सध्याचे शहर *<input name="city" required placeholder="उदा. Pune"></label><label>राज्य<input name="state" value="Maharashtra"></label></div>
   <div class="two"><label>देश<input name="country" value="India"></label><label>Blood Group <span class="optional">ऐच्छिक</span><select name="blood_group"><option value="">निवड करा</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label></div>
   <label>Skills / कौशल्ये<input name="skills" placeholder="उदा. Computer, Electrician, Teaching"></label>
+  <fieldset style="border:0;padding:0;margin:0 0 18px"><legend style="font-weight:800;margin-bottom:7px">🎯 माझे कार्यक्षेत्र *</legend><p class="work-note">तुम्ही एकापेक्षा जास्त क्षेत्रे निवडू शकता.</p><div class="work-fields">
+    <label class="work-option"><input type="checkbox" name="work_field" value="प्रशासकीय सेवा"><span>🏛️ प्रशासकीय सेवा</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="न्याय व विधी"><span>⚖️ न्याय व विधी</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="उद्योग व उद्योजकता"><span>🏭 उद्योग व उद्योजकता</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="अभियांत्रिकी व तंत्रज्ञान"><span>⚙️ अभियांत्रिकी व तंत्रज्ञान</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="वैद्यकीय व आरोग्य"><span>👨‍⚕️ वैद्यकीय व आरोग्य</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="शिक्षण"><span>👨‍🏫 शिक्षण</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="IT / संगणक"><span>💻 IT / संगणक</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="शेती"><span>🌾 शेती</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="पत्रकारिता / मीडिया"><span>📰 पत्रकारिता / मीडिया</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="कला व संस्कृती"><span>🎨 कला व संस्कृती</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="क्रीडा"><span>🏅 क्रीडा</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="सामाजिक कार्य"><span>🤝 सामाजिक कार्य</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="नोकरी / कॉर्पोरेट"><span>💼 नोकरी / कॉर्पोरेट</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="बांधकाम / तांत्रिक व्यवसाय"><span>👷 बांधकाम / तांत्रिक व्यवसाय</span></label>
+    <label class="work-option"><input type="checkbox" name="work_field" value="इतर"><span>➕ इतर</span></label>
+  </div></fieldset>
   <label>मोबाईल नंबर <span class="optional">ऐच्छिक</span><input name="phone" inputmode="tel" placeholder="फक्त संपर्कासाठी, public नको असल्यास रिकामे ठेवा"></label>
   <div class="privacy"><input id="publicProfile" type="checkbox" name="is_public"><label for="publicProfile">माझी प्रोफाइल Directory मध्ये public करण्यास मी परवानगी देतो/देते.</label></div>
   <div class="privacy"><input id="bloodPublic" type="checkbox" name="blood_public"><label for="bloodPublic">माझा Blood Group public Directory मध्ये दाखवण्यास परवानगी.</label></div>
-  <button class="primary-btn" type="submit">माहिती Submit करा →</button>
-  <p id="formMessage" class="form-message"></p>
+  <button class="primary-btn" type="submit">माहिती Submit करा →</button><p id="formMessage" class="form-message"></p>
 </form>
 <div class="privacy-note"><b>🔒 Privacy:</b> पूर्ण घरचा पत्ता, password किंवा इतर संवेदनशील माहिती येथे भरू नका. Admin verification नंतरच public profile दाखवणे योग्य आहे.</div>
 </main>
-<script src="js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/profile.js"></script>
-<script src="js/site.js"></script><script src="js/analytics.js"></script>
+<script src="js/config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/profile.js"></script><script src="js/site.js"></script><script src="js/analytics.js"></script>
 </body></html>
