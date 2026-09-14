@@ -1,0 +1,5 @@
+name = "kurduwadi-city-portal-cloudflare"
+compatibility_date = "2026-09-14"
+
+[assets]
+directory = "."
