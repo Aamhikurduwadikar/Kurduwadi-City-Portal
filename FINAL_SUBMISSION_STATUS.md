@@ -30,6 +30,8 @@
 - Project is active and connected.
 - Admin approval RPCs and RLS for Business Cards and Gallery were fixed.
 - Frontend uses only the public Supabase key; no service_role key is included.
+- Security hardening applied: anonymous execution was revoked for admin/security-definer RPCs; authenticated admin RPC access remains protected by `is_admin()` checks.
+- Storage buckets verified: `community-images`, `personality-images`, `photos`, `videos`.
 
 ## External Google steps — account owner action required
 - Google Analytics Measurement ID is still a placeholder until the real ID is supplied.
@@ -37,8 +39,9 @@
 - AdSense application/approval requires the Google account owner and site review.
 
 ## Deployment
-- GitHub main contains the latest project changes.
-- Latest Vercel deployment could not be triggered from the current deployment integration because the deployment tool rejected the required deployment parameters. Do not treat the current production URL as proof that every latest GitHub change is live.
+- GitHub `main` contains the latest project changes.
+- Current Vercel integration available to ChatGPT cannot authenticate to the project's deployment scope, so I cannot honestly certify that the newest GitHub commit is deployed.
+- The site has an existing production URL, but the current production URL must not be treated as proof that every latest GitHub change is live until Vercel deployment is verified.
 
 ## Current production URL
 https://kurduwadi-city-portal.vercel.app/
